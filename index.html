@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>内向型むけ、休日のすごし方</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f6f4f0;
+  --bg-warm: #eee9e1;
+  --text: #2c2825;
+  --text-sub: #7a726a;
+  --accent: #8b7355;
+  --accent-light: #c4b49a;
+  --accent-pale: #e8e0d4;
+  --recovery: #6b8f71;
+  --recovery-light: #d4e4d6;
+  --recovery-pale: #eaf2eb;
+  --danger: #b07070;
+  --danger-light: #f0dada;
+  --white: #fffefb;
+  --shadow: 0 1px 3px rgba(44,40,37,0.06);
+  --shadow-md: 0 4px 12px rgba(44,40,37,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+  --font-display: 'Zen Old Mincho', serif;
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen { display: none; min-height: 100dvh; padding: 0 20px 40px; }
+.screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.screen-inner { max-width: 420px; margin: 0 auto; }
+
+.welcome-header { padding-top: 25dvh; text-align: center; margin-bottom: 48px; }
+
+.welcome-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.welcome-header p { font-size: 0.875rem; color: var(--text-sub); line-height: 1.8; }
+
+.time-selector { margin-bottom: 40px; }
+.time-selector label { display: block; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 12px; letter-spacing: 0.05em; }
+
+.time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+.time-option {
+  background: var(--white);
+  border: 1.5px solid var(--accent-pale);
+  border-radius: var(--radius-sm);
+  padding: 12px 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.time-option:hover { border-color: var(--accent-light); }
+.time-option.selected { background: var(--accent); border-color: var(--accent); color: var(--white); font-weight: 500; }
+
+.btn-primary {
+  display: block; width: 100%; padding: 16px;
+  background: var(--accent); color: var(--white); border: none;
+  border-radius: var(--radius); font-family: var(--font-body);
+  font-size: 0.95rem; font-weight: 500; cursor: pointer;
+  transition: all var(--transition); letter-spacing: 0.03em;
+}
+.btn-primary:hover { background: #7a644a; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary {
+  display: block; width: 100%; padding: 14px;
+  background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent-light); border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 0.9rem; cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-secondary:hover { border-color: var(--accent); background: var(--accent-pale); }
+
+.step-header { padding-top: 60px; margin-bottom: 32px; }
+.step-label { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+.step-header h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; margin-bottom: 8px; }
+.step-header p { font-size: 0.825rem; color: var(--text-sub); line-height: 1.7; }
+
+.chip-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 36px; }
+
+.chip {
+  padding: 10px 18px; background: var(--white);
+  border: 1.5px solid var(--accent-pale); border-radius: 100px;
+  font-family: var(--font-body); font-size: 0.825rem; color: var(--text);
+  cursor: pointer; transition: all var(--transition); user-select: none; line-height: 1.4;
+}
+.chip:hover { border-color: var(--danger); }
+.chip.selected { background: var(--danger-light); border-color: var(--danger); color: var(--danger); font-weight: 500; }
+
+/* Template cards */
+.template-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+
+.template-card {
+  background: var(--white); border: 2px solid var(--accent-pale);
+  border-radius: var(--radius); padding: 20px; cursor: pointer;
+  transition: all var(--transition); position: relative;
+}
+.template-card:hover { border-color: var(--accent-light); box-shadow: var(--shadow-md); }
+.template-card.selected { border-color: var(--accent); box-shadow: var(--shadow-md); }
+.template-card.selected::after {
+  content: '✓'; position: absolute; top: 16px; right: 16px;
+  width: 24px; height: 24px; background: var(--accent); color: var(--white);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+}
+
+.template-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+.template-desc { font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 10px; }
+.template-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+.template-tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 100px; background: var(--bg); color: var(--text-sub); }
+.template-tag.recovery { background: var(--recovery-pale); color: var(--recovery); }
+
+/* Timetable */
+.timetable { margin-bottom: 32px; }
+
+.slot {
+  display: flex; align-items: stretch; margin-bottom: 8px;
+  min-height: 64px; border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--white); box-shadow: var(--shadow); transition: all var(--transition);
+}
+.slot:hover { box-shadow: var(--shadow-md); }
+
+.slot-time {
+  width: 72px; min-width: 72px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: var(--text-sub); background: var(--bg-warm);
+  letter-spacing: 0.02em; padding: 8px 0;
+}
+
+.slot-content { flex: 1; display: flex; align-items: center; padding: 8px 16px; cursor: pointer; }
+.slot-content.empty { color: var(--accent-light); font-size: 0.825rem; }
+.slot-content.empty::after { content: '＋ タップして変更'; }
+.slot-content.filled { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+
+.slot.recovery .slot-content { background: var(--recovery-pale); color: var(--recovery); font-weight: 500; font-size: 0.9rem; }
+.slot.recovery .slot-time { background: var(--recovery-light); color: var(--recovery); }
+
+.slot-clear {
+  width: 40px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--accent-light); font-size: 1rem;
+  cursor: pointer; opacity: 0; transition: opacity var(--transition);
+}
+.slot:hover .slot-clear.visible { opacity: 1; }
+.slot-clear.visible { opacity: 0.5; }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(44,40,37,0.3); z-index: 100;
+  backdrop-filter: blur(4px); animation: fadeInFast 0.2s ease;
+}
+.modal-overlay.active { display: flex; align-items: flex-end; justify-content: center; }
+
+@keyframes fadeInFast { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-sheet {
+  background: var(--white); width: 100%; max-width: 460px;
+  border-radius: 20px 20px 0 0; padding: 24px 20px 40px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 70dvh; overflow-y: auto;
+}
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-handle { width: 36px; height: 4px; background: var(--accent-pale); border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 16px; }
+.activity-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+
+.activity-option {
+  padding: 14px 16px; background: var(--bg);
+  border: 1.5px solid transparent; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.875rem; color: var(--text);
+  cursor: pointer; transition: all var(--transition); text-align: left;
+  display: flex; align-items: center; gap: 10px;
+}
+.activity-option:hover { border-color: var(--accent-light); }
+
+.custom-input-row { display: flex; gap: 8px; }
+.custom-input-row input {
+  flex: 1; padding: 12px 14px; border: 1.5px solid var(--accent-pale);
+  border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 0.875rem; color: var(--text); background: var(--bg); outline: none;
+}
+.custom-input-row input:focus { border-color: var(--accent); }
+.custom-input-row input::placeholder { color: var(--accent-light); }
+.custom-input-row button {
+  padding: 12px 18px; background: var(--accent); color: var(--white);
+  border: none; border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 0.825rem; cursor: pointer; white-space: nowrap;
+}
+
+/* Banners */
+.not-todo-banner { background: var(--danger-light); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 24px; }
+.not-todo-banner-label { font-size: 0.7rem; color: var(--danger); letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 500; }
+.not-todo-banner-items { font-size: 0.8rem; color: var(--danger); line-height: 1.6; }
+
+/* Complete */
+.complete-message { padding-top: 48px; text-align: center; margin-bottom: 32px; }
+.complete-message h2 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 8px; }
+.complete-message p { font-size: 0.85rem; color: var(--text-sub); }
+
+/* Settings */
+.settings-toggle {
+  position: fixed; top: 16px; right: 16px; width: 40px; height: 40px;
+  background: var(--white); border: 1px solid var(--accent-pale); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 1rem; color: var(--text-sub); box-shadow: var(--shadow); z-index: 50;
+}
+.settings-toggle:hover { background: var(--bg-warm); }
+
+.settings-panel {
+  display: none; position: fixed; top: 64px; right: 16px;
+  background: var(--white); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-md); z-index: 50; width: 260px;
+}
+.settings-panel.active { display: block; animation: fadeInFast 0.2s ease; }
+.settings-panel label { display: block; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px; }
+.settings-panel select {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--accent-pale);
+  border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 0.875rem; color: var(--text); background: var(--white);
+  margin-bottom: 16px; outline: none;
+}
+.settings-reset { font-size: 0.8rem; color: var(--danger); background: none; border: none; cursor: pointer; font-family: var(--font-body); }
+.settings-reset:hover { text-decoration: underline; }
+
+.progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); transition: width 0.4s ease; z-index: 60; }
+
+.mt-16 { margin-top: 16px; }
+
+/* Capture area */
+#captureArea {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 24px 16px 16px;
+}
+
+.capture-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.capture-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.capture-date {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  letter-spacing: 0.05em;
+}
+
+.btn-reset {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: var(--text-sub);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-reset:hover { color: var(--danger); }
+
+@media (max-width: 380px) { .time-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<button class="settings-toggle" id="settingsToggle" style="display:none" aria-label="設定">⚙</button>
+<div class="settings-panel" id="settingsPanel">
+  <label>起床時間を変更</label>
+  <select id="settingsWakeTime"></select>
+  <button class="settings-reset" id="resetAll">すべてリセット</button>
+</div>
+
+<div class="screen active" id="screenWelcome">
+  <div class="screen-inner">
+    <div class="welcome-header">
+      <h1>内向型むけ、<br>休日のすごし方</h1>
+      <p>考えない休日をつくる。<br>まず、起きる時間を決めましょう。</p>
+    </div>
+    <div class="time-selector">
+      <label>起床時間</label>
+      <div class="time-grid" id="timeGrid"></div>
+    </div>
+    <button class="btn-primary" id="btnStart" disabled>はじめる</button>
+  </div>
+</div>
+
+<div class="screen" id="screenNotTodo">
+  <div class="screen-inner">
+    <div class="step-header">
+      <div class="step-label">Step 1</div>
+      <h2>今日やらないことを決める</h2>
+      <p>先に「やらないこと」を選ぶだけで、<br>頭の中が驚くほど静かになります。</p>
+    </div>
+    <div class="chip-grid" id="chipGrid"></div>
+    <button class="btn-primary" id="btnToStep2">次へ — 過ごし方を選ぶ</button>
+    <button class="btn-secondary mt-16" id="btnSkipNotTodo">スキップ</button>
+  </div>
+</div>
+
+<div class="screen" id="screenTemplate">
+  <div class="screen-inner">
+    <div class="step-header">
+      <div class="step-label">Step 2</div>
+      <h2>今日の過ごし方を選ぶ</h2>
+      <p>1つ選ぶだけで時間割が自動で埋まります。<br>あとから個別に変更もできます。</p>
+    </div>
+    <div class="template-grid" id="templateGrid"></div>
+    <button class="btn-primary" id="btnApplyTemplate" disabled>この過ごし方にする</button>
+    <button class="btn-secondary mt-16" id="btnBackNotTodo">やらないことを選び直す</button>
+  </div>
+</div>
+
+<div class="screen" id="screenTimetable">
+  <div class="screen-inner">
+    <div class="step-header">
+      <div class="step-label">Step 3</div>
+      <h2>時間割を確認する</h2>
+      <p>変えたいコマだけタップして調整できます。<br>そのままでもOK。</p>
+    </div>
+    <div id="notTodoBanner"></div>
+    <div class="timetable" id="timetableBuilder"></div>
+    <button class="btn-primary" id="btnComplete">今日はこれでいく</button>
+    <button class="btn-secondary mt-16" id="btnBackTemplate">過ごし方を選び直す</button>
+  </div>
+</div>
+
+<div class="screen" id="screenComplete">
+  <div class="screen-inner">
+    <div class="complete-message">
+      <h2>準備できました</h2>
+      <p>あとは時間割どおりに過ごすだけ。</p>
+    </div>
+    <div id="captureArea">
+      <div class="capture-header">
+        <div class="capture-title">内向型むけ、休日のすごし方</div>
+        <div class="capture-date" id="captureDate"></div>
+      </div>
+      <div id="notTodoBannerFinal"></div>
+      <div class="timetable" id="timetableFinal"></div>
+    </div>
+    <button class="btn-primary mt-16" id="btnSaveImage">📷 画像として保存する</button>
+    <button class="btn-secondary mt-16" id="btnEdit">時間割を調整する</button>
+    <button class="btn-secondary mt-16" id="btnNewDay">新しい一日をつくる</button>
+    <button class="btn-reset mt-16" id="btnResetFromComplete">すべてリセットして最初に戻る</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activityModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">何をする？</div>
+    <div class="activity-list" id="activityList"></div>
+    <div class="custom-input-row">
+      <input type="text" id="customActivity" placeholder="自分で入力する" maxlength="20">
+      <button id="btnCustomActivity">決定</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const NOT_TODO_PRESETS = [
+    'SNSをダラダラ見る', '来てない連絡を気にする', '誘いにすぐ返事する',
+    '「何かしなきゃ」と焦る', '他人の進捗と比べる', '予定を詰め込む',
+    '完璧にやろうとする', 'ニュースを追い続ける'
+  ];
+
+  const ACTIVITIES = [
+    { emoji: '🚶', label: '散歩' },
+    { emoji: '📖', label: '読書' },
+    { emoji: '💤', label: '昼寝' },
+    { emoji: '☕', label: 'カフェに行く' },
+    { emoji: '🧹', label: '掃除・片付け' },
+    { emoji: '🍳', label: '料理' },
+    { emoji: '🎬', label: '映画・動画を観る' },
+    { emoji: '🛒', label: '買い物' },
+    { emoji: '🎵', label: '音楽を聴く' },
+    { emoji: '🛁', label: 'お風呂にゆっくり' },
+    { emoji: '✍️', label: '日記・ノートを書く' },
+  ];
+
+  const R = { label: '☁ 回復タイム（何もしない）', recovery: true };
+  const a = (emoji, label) => ({ emoji, label, recovery: false });
+
+  const TEMPLATES = [
+    {
+      id: 'recovery',
+      name: '🌿 回復型',
+      desc: '疲れた心と体を休める一日。回復コマ多めで、ゆるく過ごします。',
+      tags: ['回復多め', '散歩', '読書', '昼寝'],
+      sequence: [
+        a('🚶','散歩'), a('📖','読書'), R, a('🍳','料理'),
+        a('💤','昼寝'), R, a('🛁','お風呂にゆっくり'), R,
+        a('📖','読書'), R, a('🎵','音楽を聴く'), R,
+      ]
+    },
+    {
+      id: 'balance',
+      name: '☕ バランス型',
+      desc: '動くことと休むことを交互に。迷ったらこれ。',
+      tags: ['バランス', 'カフェ', '映画', '料理'],
+      sequence: [
+        a('🚶','散歩'), a('☕','カフェに行く'), a('📖','読書'), R,
+        a('🍳','料理'), a('🎬','映画・動画を観る'), R,
+        a('🛁','お風呂にゆっくり'), a('✍️','日記・ノートを書く'), R,
+        a('🎵','音楽を聴く'), R,
+      ]
+    },
+    {
+      id: 'active',
+      name: '🔥 アクティブ型',
+      desc: 'やりたいことに集中する一日。動いて、整えて、また動く。',
+      tags: ['行動的', '買い物', '片付け', '外出'],
+      sequence: [
+        a('🚶','散歩'), a('🧹','掃除・片付け'), a('☕','カフェに行く'),
+        a('🛒','買い物'), R, a('🍳','料理'),
+        a('🎬','映画・動画を観る'), a('🛁','お風呂にゆっくり'), R,
+        a('✍️','日記・ノートを書く'), a('📖','読書'), R,
+      ]
+    }
+  ];
+
+  const RECOVERY_LABEL = R.label;
+  const SLOT_MINUTES = 90;
+
+  let state = { wakeTime: null, notToDo: [], slots: [], selectedTemplate: null, currentSlotIndex: null };
+
+  const $ = id => document.getElementById(id);
+  const screens = {
+    welcome: $('screenWelcome'), notTodo: $('screenNotTodo'),
+    template: $('screenTemplate'), timetable: $('screenTimetable'), complete: $('screenComplete')
+  };
+
+  function formatTime(h, m) { return h + ':' + String(m).padStart(2, '0'); }
+
+  function generateEmptySlots(wakeHour) {
+    const slots = [];
+    let h = wakeHour, m = 0;
+    while (h < 22 || (h === 22 && m === 0)) {
+      slots.push({ time: formatTime(h, m), activity: null, isRecovery: false });
+      m += SLOT_MINUTES;
+      while (m >= 60) { h++; m -= 60; }
+    }
+    return slots;
+  }
+
+  function applyTemplate(templateId) {
+    const tpl = TEMPLATES.find(t => t.id === templateId);
+    if (!tpl) return;
+    state.slots.forEach((slot, i) => {
+      const entry = tpl.sequence[i % tpl.sequence.length];
+      if (entry.recovery) {
+        slot.activity = RECOVERY_LABEL;
+        slot.isRecovery = true;
+      } else {
+        slot.activity = entry.emoji + ' ' + entry.label;
+        slot.isRecovery = false;
+      }
+    });
+  }
+
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+    window.scrollTo(0, 0);
+    const p = { welcome: 0, notTodo: 20, template: 50, timetable: 75, complete: 100 };
+    $('progressBar').style.width = p[name] + '%';
+    $('settingsToggle').style.display = name === 'welcome' ? 'none' : 'flex';
+    $('settingsPanel').classList.remove('active');
+  }
+
+  function saveState() { localStorage.setItem('timetable_state', JSON.stringify(state)); }
+
+  function loadState() {
+    try {
+      const s = JSON.parse(localStorage.getItem('timetable_state'));
+      if (s && s.wakeTime != null) { state = s; return true; }
+    } catch(e) {}
+    return false;
+  }
+
+  function renderTimeGrid() {
+    const grid = $('timeGrid');
+    grid.innerHTML = '';
+    for (let h = 5; h <= 11; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const btn = document.createElement('button');
+        btn.className = 'time-option';
+        btn.textContent = formatTime(h, m);
+        if (state.wakeTime === h + m / 60) btn.classList.add('selected');
+        btn.onclick = () => {
+          grid.querySelectorAll('.time-option').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.wakeTime = h + m / 60;
+          $('btnStart').disabled = false;
+        };
+        grid.appendChild(btn);
+      }
+    }
+  }
+
+  function renderChips() {
+    const grid = $('chipGrid');
+    grid.innerHTML = '';
+    NOT_TODO_PRESETS.forEach(text => {
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (state.notToDo.includes(text) ? ' selected' : '');
+      chip.textContent = text;
+      chip.onclick = () => {
+        const idx = state.notToDo.indexOf(text);
+        if (idx >= 0) { state.notToDo.splice(idx, 1); chip.classList.remove('selected'); }
+        else { state.notToDo.push(text); chip.classList.add('selected'); }
+      };
+      grid.appendChild(chip);
+    });
+  }
+
+  function renderTemplates() {
+    const grid = $('templateGrid');
+    grid.innerHTML = '';
+    TEMPLATES.forEach(tpl => {
+      const card = document.createElement('div');
+      card.className = 'template-card' + (state.selectedTemplate === tpl.id ? ' selected' : '');
+      card.innerHTML =
+        '<div class="template-name">' + tpl.name + '</div>' +
+        '<div class="template-desc">' + tpl.desc + '</div>' +
+        '<div class="template-preview">' +
+        tpl.tags.map(t => '<span class="template-tag' + (t === '回復多め' ? ' recovery' : '') + '">' + t + '</span>').join('') +
+        '</div>';
+      card.onclick = () => {
+        state.selectedTemplate = tpl.id;
+        grid.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        $('btnApplyTemplate').disabled = false;
+      };
+      grid.appendChild(card);
+    });
+  }
+
+  function renderNotTodoBanner(id) {
+    const el = $(id);
+    if (!state.notToDo.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="not-todo-banner"><div class="not-todo-banner-label">今日やらないこと</div>' +
+      '<div class="not-todo-banner-items">' + state.notToDo.join('　／　') + '</div></div>';
+  }
+
+  function renderTimetable(containerId, interactive) {
+    const c = $(containerId);
+    c.innerHTML = '';
+    state.slots.forEach((slot, i) => {
+      const div = document.createElement('div');
+      div.className = 'slot' + (slot.isRecovery ? ' recovery' : '');
+
+      const time = document.createElement('div');
+      time.className = 'slot-time';
+      time.textContent = slot.time;
+
+      const content = document.createElement('div');
+      content.className = 'slot-content ' + (slot.activity ? 'filled' : 'empty');
+      if (slot.activity) content.textContent = slot.activity;
+      if (interactive) content.onclick = () => openActivityPicker(i);
+
+      div.appendChild(time);
+      div.appendChild(content);
+
+      if (interactive) {
+        const clear = document.createElement('button');
+        clear.className = 'slot-clear' + (slot.activity && !slot.isRecovery ? ' visible' : '');
+        clear.textContent = '×';
+        clear.onclick = (e) => {
+          e.stopPropagation();
+          slot.activity = null; slot.isRecovery = false;
+          renderTimetable(containerId, true); saveState();
+        };
+        div.appendChild(clear);
+      }
+      c.appendChild(div);
+    });
+  }
+
+  function openActivityPicker(idx) {
+    state.currentSlotIndex = idx;
+    const list = $('activityList');
+    list.innerHTML = '';
+
+    const rec = document.createElement('button');
+    rec.className = 'activity-option';
+    rec.innerHTML = '<span class="emoji">☁</span> 回復タイム（何もしない）';
+    rec.onclick = () => selectActivity(RECOVERY_LABEL, true);
+    list.appendChild(rec);
+
+    ACTIVITIES.forEach(a => {
+      const btn = document.createElement('button');
+      btn.className = 'activity-option';
+      btn.innerHTML = '<span class="emoji">' + a.emoji + '</span> ' + a.label;
+      btn.onclick = () => selectActivity(a.emoji + ' ' + a.label, false);
+      list.appendChild(btn);
+    });
+
+    $('customActivity').value = '';
+    $('activityModal').classList.add('active');
+  }
+
+  function selectActivity(label, isRecovery) {
+    if (state.currentSlotIndex !== null) {
+      state.slots[state.currentSlotIndex].activity = label;
+      state.slots[state.currentSlotIndex].isRecovery = isRecovery;
+      saveState();
+      renderTimetable('timetableBuilder', true);
+    }
+    closeModal();
+  }
+
+  function closeModal() {
+    $('activityModal').classList.remove('active');
+    state.currentSlotIndex = null;
+  }
+
+  function initSettings() {
+    const sel = $('settingsWakeTime');
+    sel.innerHTML = '';
+    for (let h = 5; h <= 11; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const opt = document.createElement('option');
+        opt.value = h + m / 60;
+        opt.textContent = formatTime(h, m);
+        if (state.wakeTime === h + m / 60) opt.selected = true;
+        sel.appendChild(opt);
+      }
+    }
+    sel.onchange = () => {
+      state.wakeTime = parseFloat(sel.value);
+      state.slots = generateEmptySlots(Math.floor(state.wakeTime));
+      if (state.selectedTemplate) applyTemplate(state.selectedTemplate);
+      saveState();
+      renderTimetable('timetableBuilder', true);
+      renderTimetable('timetableFinal', false);
+    };
+  }
+
+  function init() {
+    renderTimeGrid();
+    renderChips();
+    renderTemplates();
+
+    function updateCaptureDate() {
+      const d = new Date();
+      const days = ['日','月','火','水','木','金','土'];
+      $('captureDate').textContent = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+    }
+
+    function showComplete() {
+      saveState();
+      updateCaptureDate();
+      renderNotTodoBanner('notTodoBannerFinal');
+      renderTimetable('timetableFinal', false);
+      showScreen('complete');
+    }
+
+    if (loadState() && state.slots.length > 0) {
+      showComplete();
+      initSettings();
+    }
+
+    $('btnStart').onclick = () => {
+      state.slots = generateEmptySlots(Math.floor(state.wakeTime));
+      saveState(); showScreen('notTodo');
+    };
+
+    $('btnToStep2').onclick = () => { saveState(); showScreen('template'); };
+    $('btnSkipNotTodo').onclick = () => { state.notToDo = []; saveState(); showScreen('template'); };
+
+    $('btnApplyTemplate').onclick = () => {
+      applyTemplate(state.selectedTemplate);
+      saveState();
+      renderNotTodoBanner('notTodoBanner');
+      renderTimetable('timetableBuilder', true);
+      showScreen('timetable');
+      initSettings();
+    };
+
+    $('btnBackTemplate').onclick = () => { renderTemplates(); showScreen('template'); };
+
+    $('btnBackNotTodo').onclick = () => { renderChips(); showScreen('notTodo'); };
+
+    $('btnComplete').onclick = () => { showComplete(); };
+
+    $('btnEdit').onclick = () => {
+      renderNotTodoBanner('notTodoBanner');
+      renderTimetable('timetableBuilder', true);
+      showScreen('timetable');
+    };
+
+    $('btnNewDay').onclick = () => {
+      state.notToDo = [];
+      state.selectedTemplate = null;
+      state.slots = generateEmptySlots(Math.floor(state.wakeTime));
+      saveState(); renderChips(); renderTemplates();
+      $('btnApplyTemplate').disabled = true;
+      showScreen('notTodo');
+    };
+
+    $('btnSaveImage').onclick = async () => {
+      const btn = $('btnSaveImage');
+      const original = btn.textContent;
+      btn.textContent = '画像を生成中…';
+      btn.disabled = true;
+      try {
+        const area = $('captureArea');
+        const canvas = await html2canvas(area, {
+          scale: 2,
+          backgroundColor: '#f6f4f0',
+          useCORS: true,
+          logging: false
+        });
+        canvas.toBlob(function(blob) {
+          if (!blob) { btn.textContent = original; btn.disabled = false; return; }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'timetable.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          btn.textContent = '✓ 保存しました';
+          setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
+        }, 'image/png');
+      } catch(e) {
+        console.error(e);
+        btn.textContent = original;
+        btn.disabled = false;
+      }
+    };
+
+    $('activityModal').onclick = (e) => { if (e.target === $('activityModal')) closeModal(); };
+
+    $('btnCustomActivity').onclick = () => {
+      const v = $('customActivity').value.trim();
+      if (v) selectActivity('✏ ' + v, false);
+    };
+
+    $('customActivity').onkeydown = (e) => {
+      if (e.key === 'Enter') { const v = $('customActivity').value.trim(); if (v) selectActivity('✏ ' + v, false); }
+    };
+
+    $('settingsToggle').onclick = () => $('settingsPanel').classList.toggle('active');
+
+    function doReset() {
+      if (confirm('すべてリセットしますか？起床時間の設定もクリアされます。')) {
+        localStorage.removeItem('timetable_state');
+        state = { wakeTime: null, notToDo: [], slots: [], selectedTemplate: null, currentSlotIndex: null };
+        renderTimeGrid(); renderChips(); renderTemplates();
+        $('btnStart').disabled = true;
+        $('btnApplyTemplate').disabled = true;
+        showScreen('welcome');
+      }
+    }
+
+    $('resetAll').onclick = doReset;
+    $('btnResetFromComplete').onclick = doReset;
+
+    document.addEventListener('click', (e) => {
+      if (!$('settingsPanel').contains(e.target) && e.target !== $('settingsToggle'))
+        $('settingsPanel').classList.remove('active');
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
